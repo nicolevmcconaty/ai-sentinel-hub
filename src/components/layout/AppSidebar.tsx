@@ -1,4 +1,4 @@
-import { LayoutDashboard, ListTodo, Shield, FileText, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, ListTodo, Shield, FileText, Settings, ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -25,13 +25,13 @@ export function AppSidebar() {
       {/* Logo */}
       <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Shield className="w-5 h-5 text-primary-foreground" />
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center glow-primary">
+            <Zap className="w-5 h-5 text-primary-foreground" />
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="font-semibold text-sidebar-foreground text-sm">AI Risk</span>
-              <span className="text-xs text-sidebar-foreground/60">Intelligence</span>
+              <span className="font-bold text-foreground text-sm tracking-tight">AI ACCELERATE</span>
+              <span className="text-[10px] text-primary font-medium tracking-widest">RISK INTEL</span>
             </div>
           )}
         </div>
@@ -49,11 +49,11 @@ export function AppSidebar() {
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group",
                     isActive
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      ? "bg-primary/10 text-primary border border-primary/20"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground"
                   )}
                 >
-                  <item.icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-sidebar-primary-foreground")} />
+                  <item.icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
                   {!collapsed && (
                     <span className="font-medium text-sm">{item.title}</span>
                   )}
@@ -71,8 +71,8 @@ export function AppSidebar() {
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
             location.pathname === "/settings"
-              ? "bg-sidebar-primary text-sidebar-primary-foreground"
-              : "text-sidebar-foreground hover:bg-sidebar-accent"
+              ? "bg-primary/10 text-primary border border-primary/20"
+              : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground"
           )}
         >
           <Settings className="w-5 h-5 flex-shrink-0" />
@@ -83,7 +83,7 @@ export function AppSidebar() {
           variant="ghost"
           size="sm"
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full mt-2 text-sidebar-foreground hover:bg-sidebar-accent justify-center"
+          className="w-full mt-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground justify-center"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </Button>

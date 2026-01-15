@@ -8,11 +8,11 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieCha
 import { formatDistanceToNow } from "date-fns";
 
 const severityData = [
-  { name: "Very Low", value: mockJobsSummary.severity_distribution["1"], color: "hsl(160 84% 39%)" },
-  { name: "Low", value: mockJobsSummary.severity_distribution["2"], color: "hsl(217 91% 60%)" },
-  { name: "Medium", value: mockJobsSummary.severity_distribution["3"], color: "hsl(38 92% 50%)" },
-  { name: "High", value: mockJobsSummary.severity_distribution["4"], color: "hsl(25 95% 53%)" },
-  { name: "Critical", value: mockJobsSummary.severity_distribution["5"], color: "hsl(0 84% 60%)" },
+  { name: "Very Low", value: mockJobsSummary.severity_distribution["1"], color: "hsl(160, 84%, 39%)" },
+  { name: "Low", value: mockJobsSummary.severity_distribution["2"], color: "hsl(190, 95%, 45%)" },
+  { name: "Medium", value: mockJobsSummary.severity_distribution["3"], color: "hsl(38, 92%, 50%)" },
+  { name: "High", value: mockJobsSummary.severity_distribution["4"], color: "hsl(25, 95%, 53%)" },
+  { name: "Critical", value: mockJobsSummary.severity_distribution["5"], color: "hsl(0, 72%, 51%)" },
 ];
 
 const taxonomyData = mockDashboardSummary.top_taxonomy_labels.slice(0, 6).map(([label, count]) => ({
@@ -86,18 +86,19 @@ export default function Dashboard() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Severity Distribution */}
-        <Card className="p-6">
-          <h3 className="font-semibold text-foreground mb-4">Risk Severity Distribution</h3>
+        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
+          <h3 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Risk Severity Distribution</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={severityData} layout="vertical">
-                <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} width={70} />
+                <XAxis type="number" stroke="hsl(210, 15%, 55%)" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis type="category" dataKey="name" stroke="hsl(210, 15%, 55%)" fontSize={11} width={70} tickLine={false} axisLine={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
+                    backgroundColor: "hsl(216, 45%, 9%)",
+                    border: "1px solid hsl(216, 30%, 18%)",
                     borderRadius: "8px",
+                    color: "hsl(200, 20%, 95%)",
                   }}
                 />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
@@ -111,20 +112,20 @@ export default function Dashboard() {
         </Card>
 
         {/* Top Risk Categories */}
-        <Card className="p-6">
-          <h3 className="font-semibold text-foreground mb-4">Top Risk Categories</h3>
+        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
+          <h3 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Top Risk Categories</h3>
           <div className="space-y-3">
             {taxonomyData.map(({ label, count }) => (
               <div key={label} className="flex items-center justify-between">
                 <TaxonomyBadge label={label} />
                 <div className="flex items-center gap-3">
-                  <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-primary rounded-full"
+                      className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
                       style={{ width: `${(count / taxonomyData[0].count) * 100}%` }}
                     />
                   </div>
-                  <span className="text-sm font-mono text-muted-foreground w-12 text-right">
+                  <span className="text-xs font-mono text-muted-foreground w-12 text-right">
                     {count}
                   </span>
                 </div>
@@ -135,28 +136,28 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Risks */}
-      <Card className="p-6">
+      <Card className="p-6 bg-card/50 backdrop-blur-sm border-border overflow-hidden">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-foreground">Recent Risks</h3>
-          <a href="/risks" className="text-sm text-primary hover:underline">View all</a>
+          <h3 className="font-semibold text-foreground text-sm uppercase tracking-wider">Recent Risks</h3>
+          <a href="/risks" className="text-xs text-primary hover:text-primary/80 font-medium uppercase tracking-wider">View all</a>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Category</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Severity</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Sector</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Harm</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Created</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">ID</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Category</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Severity</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Sector</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Harm</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Created</th>
               </tr>
             </thead>
             <tbody>
               {mockRisks.slice(0, 5).map((risk) => (
-                <tr key={risk.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
+                <tr key={risk.id} className="border-b border-border/30 hover:bg-primary/5 transition-colors">
                   <td className="py-3 px-4">
-                    <span className="font-mono text-sm text-primary">AIR-{risk.id}</span>
+                    <span className="font-mono text-xs text-primary">AIR-{risk.id}</span>
                   </td>
                   <td className="py-3 px-4">
                     <TaxonomyBadge label={risk.taxonomy_label} />
@@ -164,9 +165,9 @@ export default function Dashboard() {
                   <td className="py-3 px-4">
                     <SeverityIndicator level={risk.severity} />
                   </td>
-                  <td className="py-3 px-4 text-sm text-foreground">{risk.sector}</td>
-                  <td className="py-3 px-4 text-sm text-muted-foreground max-w-xs truncate">{risk.harm}</td>
-                  <td className="py-3 px-4 text-sm text-muted-foreground">
+                  <td className="py-3 px-4 text-xs text-foreground">{risk.sector}</td>
+                  <td className="py-3 px-4 text-xs text-muted-foreground max-w-xs truncate">{risk.harm}</td>
+                  <td className="py-3 px-4 text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(risk.created_at), { addSuffix: true })}
                   </td>
                 </tr>
