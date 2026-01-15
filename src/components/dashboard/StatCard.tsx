@@ -13,15 +13,15 @@ interface StatCardProps {
 }
 
 const variantStyles = {
-  default: "",
-  success: "glow-success border-success/20",
-  warning: "glow-warning border-warning/20",
-  critical: "glow-critical border-critical/20",
-  primary: "glow-primary border-primary/20",
+  default: "border-border hover:border-muted-foreground/30",
+  success: "border-success/30 glow-success",
+  warning: "border-warning/30 glow-warning",
+  critical: "border-critical/30 glow-critical",
+  primary: "border-primary/30 glow-primary",
 };
 
 const iconVariantStyles = {
-  default: "text-muted-foreground bg-muted",
+  default: "text-muted-foreground bg-muted/50",
   success: "text-success bg-success/10",
   warning: "text-warning bg-warning/10",
   critical: "text-critical bg-critical/10",
@@ -31,12 +31,12 @@ const iconVariantStyles = {
 export function StatCard({ title, value, change, icon, trend, variant = "default" }: StatCardProps) {
   return (
     <Card className={cn(
-      "p-6 bg-card border transition-all duration-300 hover:shadow-lg",
+      "p-5 bg-card/50 backdrop-blur-sm border transition-all duration-300 hover:bg-card",
       variantStyles[variant]
     )}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-muted-foreground">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider text-[11px]">
             {title}
           </p>
           <p className="text-3xl font-bold text-foreground mt-2 font-mono tracking-tight">
@@ -52,12 +52,12 @@ export function StatCard({ title, value, change, icon, trend, variant = "default
               ) : (
                 <TrendingDown className="w-4 h-4" />
               )}
-              <span>{change > 0 ? "+" : ""}{change}%</span>
+              <span className="text-xs font-medium">{change > 0 ? "+" : ""}{change}%</span>
             </div>
           )}
         </div>
         <div className={cn(
-          "w-12 h-12 rounded-xl flex items-center justify-center",
+          "w-11 h-11 rounded-xl flex items-center justify-center",
           iconVariantStyles[variant]
         )}>
           {icon}

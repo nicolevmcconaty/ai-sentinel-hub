@@ -82,12 +82,12 @@ export default function Jobs() {
       </div>
 
       {/* Filters */}
-      <Card className="p-4">
+      <Card className="p-4 bg-card/50 backdrop-blur-sm border-border">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Status:</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">Status:</span>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-32 bg-background/50 border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -102,9 +102,9 @@ export default function Jobs() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Type:</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">Type:</span>
             <Select value={kindFilter} onValueChange={setKindFilter}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-32 bg-background/50 border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -117,9 +117,9 @@ export default function Jobs() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Source:</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">Source:</span>
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
-              <SelectTrigger className="w-36">
+              <SelectTrigger className="w-36 bg-background/50 border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -133,7 +133,7 @@ export default function Jobs() {
 
           <div className="flex-1" />
 
-          <Button variant="outline" size="sm" onClick={() => {
+          <Button variant="outline" size="sm" className="border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30" onClick={() => {
             setStatusFilter("all");
             setKindFilter("all");
             setSourceFilter("all");
@@ -144,29 +144,29 @@ export default function Jobs() {
       </Card>
 
       {/* Jobs Table */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-card/50 backdrop-blur-sm border-border">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-muted/50">
+            <thead className="bg-muted/30">
               <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">URL</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Type</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Source</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Tries</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Created</th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">ID</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">URL</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Source</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tries</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Created</th>
+                <th className="text-left py-3 px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredJobs.map((job) => (
-                <tr key={job.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                <tr key={job.id} className="border-b border-border/30 hover:bg-primary/5 transition-colors">
                   <td className="py-3 px-4">
-                    <span className="font-mono text-sm text-primary">#{job.id}</span>
+                    <span className="font-mono text-xs text-primary">#{job.id}</span>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="text-sm text-foreground truncate block max-w-xs" title={job.url}>
+                    <span className="text-xs text-foreground truncate block max-w-xs" title={job.url}>
                       {job.url}
                     </span>
                   </td>
@@ -175,23 +175,23 @@ export default function Jobs() {
                   </td>
                   <td className="py-3 px-4">
                     <span className={cn(
-                      "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-                      job.kind === "ingest" && "bg-blue-500/10 text-blue-500",
-                      job.kind === "aiid" && "bg-purple-500/10 text-purple-500",
-                      job.kind === "reextract" && "bg-cyan-500/10 text-cyan-500"
+                      "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide border",
+                      job.kind === "ingest" && "bg-blue-500/15 text-blue-400 border-blue-500/30",
+                      job.kind === "aiid" && "bg-purple-500/15 text-purple-400 border-purple-500/30",
+                      job.kind === "reextract" && "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
                     )}>
                       {job.kind.toUpperCase()}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-sm text-muted-foreground capitalize">{job.source}</td>
+                  <td className="py-3 px-4 text-xs text-muted-foreground capitalize">{job.source}</td>
                   <td className="py-3 px-4">
-                    <span className="font-mono text-sm text-muted-foreground">{job.tries}</span>
+                    <span className="font-mono text-xs text-muted-foreground">{job.tries}</span>
                   </td>
-                  <td className="py-3 px-4 text-sm text-muted-foreground">
+                  <td className="py-3 px-4 text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
                   </td>
                   <td className="py-3 px-4">
-                    <Button variant="ghost" size="sm" className="text-primary">
+                    <Button variant="ghost" size="sm" className="text-primary text-xs hover:bg-primary/10">
                       View
                     </Button>
                   </td>
@@ -204,7 +204,7 @@ export default function Jobs() {
         {filteredJobs.length === 0 && (
           <div className="text-center py-12">
             <ListTodo className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No jobs match the selected filters</p>
+            <p className="text-muted-foreground text-sm">No jobs match the selected filters</p>
           </div>
         )}
       </Card>

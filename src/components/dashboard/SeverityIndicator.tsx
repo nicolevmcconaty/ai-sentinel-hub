@@ -7,17 +7,17 @@ interface SeverityIndicatorProps {
 }
 
 const severityConfig = {
-  1: { label: "Very Low", className: "bg-success text-success-foreground", dotClass: "bg-success" },
-  2: { label: "Low", className: "bg-primary text-primary-foreground", dotClass: "bg-primary" },
-  3: { label: "Medium", className: "bg-warning text-warning-foreground", dotClass: "bg-warning" },
-  4: { label: "High", className: "bg-orange-500 text-white", dotClass: "bg-orange-500" },
-  5: { label: "Critical", className: "bg-critical text-critical-foreground", dotClass: "bg-critical" },
+  1: { label: "Very Low", className: "bg-success/90 text-success-foreground", dotClass: "bg-success" },
+  2: { label: "Low", className: "bg-primary/90 text-primary-foreground", dotClass: "bg-primary" },
+  3: { label: "Medium", className: "bg-warning/90 text-warning-foreground", dotClass: "bg-warning" },
+  4: { label: "High", className: "bg-orange-500/90 text-white", dotClass: "bg-orange-500" },
+  5: { label: "Critical", className: "bg-critical/90 text-critical-foreground", dotClass: "bg-critical" },
 };
 
 const sizeStyles = {
-  sm: "text-xs px-2 py-0.5",
-  md: "text-sm px-2.5 py-1",
-  lg: "text-base px-3 py-1.5",
+  sm: "text-[10px] px-2 py-0.5",
+  md: "text-xs px-2.5 py-1",
+  lg: "text-sm px-3 py-1.5",
 };
 
 export function SeverityIndicator({ level, showLabel = true, size = "sm" }: SeverityIndicatorProps) {
@@ -30,8 +30,8 @@ export function SeverityIndicator({ level, showLabel = true, size = "sm" }: Seve
           <div
             key={i}
             className={cn(
-              "w-2 h-2 rounded-full",
-              i <= level ? config.dotClass : "bg-muted"
+              "w-2 h-2 rounded-full transition-colors",
+              i <= level ? config.dotClass : "bg-muted-foreground/20"
             )}
           />
         ))}
@@ -42,7 +42,7 @@ export function SeverityIndicator({ level, showLabel = true, size = "sm" }: Seve
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-md font-medium",
+        "inline-flex items-center rounded font-semibold uppercase tracking-wide",
         config.className,
         sizeStyles[size]
       )}
