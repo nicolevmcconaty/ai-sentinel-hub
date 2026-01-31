@@ -21,6 +21,7 @@ export default function Dashboard() {
     confidence,
     isLoading,
     isError,
+    isUsingMockData,
     refetch 
   } = useDashboardData();
   
@@ -109,6 +110,20 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Mock Data Banner */}
+      {isUsingMockData && (
+        <div className="bg-warning/10 border border-warning/30 rounded-lg px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Activity className="w-4 h-4 text-warning" />
+            <span className="text-sm text-warning">Preview Mode: Showing sample data. Connect to your FastAPI backend to see live data.</span>
+          </div>
+          <Button onClick={() => refetch()} variant="ghost" size="sm" className="text-warning hover:text-warning gap-2">
+            <RefreshCw className="w-4 h-4" />
+            Retry Connection
+          </Button>
+        </div>
+      )}
+
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
