@@ -5,7 +5,8 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { mockJobsSummary, mockJobs, JobStatus, JobKind, JobSource } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useJobsSummary, useJobs } from "@/hooks/use-jobs-data";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -14,12 +15,31 @@ export default function Jobs() {
   const [kindFilter, setKindFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
 
-  const filteredJobs = mockJobs.filter((job) => {
+  const { data: jobsSummary, isLoading: isLoadingSummary } = useJobsSummary();
+  const { data: jobs, isLoading: isLoadingJobs } = useJobs();
+
+  const filteredJobs = (jobs || []).filter((job) => {
     if (statusFilter !== "all" && job.status !== statusFilter) return false;
     if (kindFilter !== "all" && job.kind !== kindFilter) return false;
     if (sourceFilter !== "all" && job.source !== sourceFilter) return false;
     return true;
   });
+
+  if (isLoadingSummary || isLoadingJobs) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div>
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-4 w-64 mt-2" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -33,25 +53,25 @@ export default function Jobs() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Jobs"
-          value={mockJobsSummary.totals.total}
+          value={jobsSummary?.totals.total || 0}
           icon={<ListTodo className="w-6 h-6" />}
           variant="primary"
         />
         <StatCard
           title="Success Rate"
-          value={`${mockJobsSummary.success_rate}%`}
+          value={`${jobsSummary?.success_rate || 0}%`}
           icon={<CheckCircle className="w-6 h-6" />}
           variant="success"
         />
         <StatCard
           title="Pending Queue"
-          value={mockJobsSummary.totals.pending}
+          value={jobsSummary?.totals.pending || 0}
           icon={<Clock className="w-6 h-6" />}
           variant="warning"
         />
         <StatCard
           title="Failed Jobs"
-          value={mockJobsSummary.totals.error}
+          value={jobsSummary?.totals.error || 0}
           icon={<XCircle className="w-6 h-6" />}
           variant="critical"
         />
@@ -61,22 +81,22 @@ export default function Jobs() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatCard
           title="Running Now"
-          value={mockJobsSummary.totals.running}
+          value={jobsSummary?.totals.running || 0}
           icon={<Zap className="w-6 h-6" />}
         />
         <StatCard
           title="24h Activity"
-          value={mockJobsSummary.recent_activity.last_24h}
+          value={jobsSummary?.recent_activity.last_24h || 0}
           icon={<Activity className="w-6 h-6" />}
         />
         <StatCard
           title="Avg Processing"
-          value={`${mockJobsSummary.avg_processing_time_seconds}s`}
+          value={`${jobsSummary?.avg_processing_time_seconds || 0}s`}
           icon={<Timer className="w-6 h-6" />}
         />
         <StatCard
           title="Skipped"
-          value={mockJobsSummary.totals.skipped}
+          value={jobsSummary?.totals.skipped || 0}
           icon={<SkipForward className="w-6 h-6" />}
         />
       </div>
