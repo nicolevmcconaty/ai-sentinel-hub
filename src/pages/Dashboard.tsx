@@ -4,8 +4,8 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { RiskTrendsChart } from "@/components/dashboard/RiskTrendsChart";
-import { CategoryTrendCard } from "@/components/dashboard/CategoryTrendCard";
+import { WeeklyHeatmap } from "@/components/dashboard/WeeklyHeatmap";
+import { RiskCategoriesCard } from "@/components/dashboard/RiskCategoriesCard";
 import { useDashboardData, useTimePeriodComparison } from "@/hooks/use-dashboard-data";
 import { secondaryTagLabels, SecondaryRiskTag, RiskCategoryTrend } from "@/lib/api";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
@@ -39,35 +39,29 @@ export default function Dashboard() {
 
   const totalSeverity = severityData.reduce((acc, item) => acc + item.value, 0);
 
-  // Prepare primary category data (sorted high to low)
-  const primaryCategoryData = riskCategories ? [
-    { name: "Technical Risks", value: riskCategories.primary.technical, color: "hsl(var(--primary))", description: "Infrastructure, systems, technology reliability" },
-    { name: "Operational Risks", value: riskCategories.primary.operational, color: "hsl(var(--warning))", description: "Day-to-day operations, processes, workflows" },
-    { name: "Business Risks", value: riskCategories.primary.business, color: "hsl(280, 70%, 50%)", description: "Strategic decisions, financial impact, positioning" },
-  ].sort((a, b) => b.value - a.value) : [];
-
-  // Prepare secondary tags for each category (sorted by value)
+  // Prepare secondary tags for each category
   const technicalTags: SecondaryRiskTag[] = ["security_risk", "privacy_risk", "technical_performance_risk", "data_risk"];
   const operationalTags: SecondaryRiskTag[] = ["compliance_regulatory_risk", "legal_liability_risk", "third_party_vendor_risk"];
   const businessTags: SecondaryRiskTag[] = ["business_financial_risk", "reputational_risk", "ethical_risk", "strategic_risk"];
 
-  const getTrendCategories = (tags: SecondaryRiskTag[]): RiskCategoryTrend[] => {
-    if (!trendData?.categories) {
-      // Fallback to current data only
-      return tags.map(tag => ({
-        category: tag,
-        label: secondaryTagLabels[tag],
-        current: riskCategories?.secondary[tag] || 0,
-        previous: 0,
-        change: 0,
-        changePercent: 0,
-        trend: "stable" as const,
-      })).sort((a, b) => b.current - a.current);
-    }
-    return trendData.categories
-      .filter(cat => tags.includes(cat.category))
-      .sort((a, b) => b.current - a.current);
-  };
+  // Prepare primary category data with tags
+  const primaryCategoryData = riskCategories ? [
+    { name: "Technical", value: riskCategories.primary.technical, color: "hsl(var(--primary))", tags: technicalTags },
+    { name: "Operational", value: riskCategories.primary.operational, color: "hsl(var(--warning))", tags: operationalTags },
+    { name: "Business", value: riskCategories.primary.business, color: "hsl(280, 70%, 50%)", tags: businessTags },
+  ] : [];
+
+  // Get all trend categories
+  const allTrendCategories: RiskCategoryTrend[] = trendData?.categories || 
+    [...technicalTags, ...operationalTags, ...businessTags].map(tag => ({
+      category: tag,
+      label: secondaryTagLabels[tag],
+      current: riskCategories?.secondary[tag] || 0,
+      previous: 0,
+      change: 0,
+      changePercent: 0,
+      trend: "stable" as const,
+    }));
 
   // Top industries
   const topIndustries = industries ? [
@@ -178,13 +172,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Time-based Trend Analysis */}
-      <RiskTrendsChart 
-        data={trendData}
-        isLoading={false}
-        period={trendPeriod}
-        onPeriodChange={setTrendPeriod}
-      />
+      {/* Weekly Risk Activity Heatmap */}
+      <WeeklyHeatmap isLoading={false} />
 
       {/* Risk Distribution & Categories Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -240,53 +229,10 @@ export default function Dashboard() {
           </p>
         </Card>
 
-        {/* Primary Risk Categories */}
-        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
-          <h3 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Top Risk Categories (High to Low)</h3>
-          <div className="space-y-4">
-            {primaryCategoryData.map((category) => {
-              const total = primaryCategoryData.reduce((acc, c) => acc + c.value, 0);
-              const percentage = total > 0 ? ((category.value / total) * 100).toFixed(0) : "0";
-              return (
-                <div key={category.name} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-sm font-medium text-foreground">{category.name}</span>
-                      <p className="text-xs text-muted-foreground">{category.description}</p>
-                    </div>
-                    <span className="text-sm font-mono font-semibold text-foreground">{category.value}</span>
-                  </div>
-                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-500" 
-                      style={{ width: `${percentage}%`, backgroundColor: category.color }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      </div>
-
-      {/* Secondary Tags Breakdown with Trends */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <CategoryTrendCard
-          title="Technical Risks"
-          color="hsl(var(--primary))"
-          categories={getTrendCategories(technicalTags)}
-          isLoading={false}
-        />
-        <CategoryTrendCard
-          title="Operational Risks"
-          color="hsl(var(--warning))"
-          categories={getTrendCategories(operationalTags)}
-          isLoading={false}
-        />
-        <CategoryTrendCard
-          title="Business Risks"
-          color="hsl(280, 70%, 50%)"
-          categories={getTrendCategories(businessTags)}
+        {/* Risk Categories (Primary + Secondary combined) */}
+        <RiskCategoriesCard
+          primaryCategories={primaryCategoryData}
+          trendCategories={allTrendCategories}
           isLoading={false}
         />
       </div>
