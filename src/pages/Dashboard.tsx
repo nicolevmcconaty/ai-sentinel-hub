@@ -27,7 +27,6 @@ export default function Dashboard() {
   
   const { 
     data: trendData, 
-    isLoading: isTrendLoading 
   } = useTimePeriodComparison(trendPeriod);
 
   // Prepare severity data for pie chart
@@ -182,7 +181,7 @@ export default function Dashboard() {
       {/* Time-based Trend Analysis */}
       <RiskTrendsChart 
         data={trendData}
-        isLoading={isTrendLoading}
+        isLoading={false}
         period={trendPeriod}
         onPeriodChange={setTrendPeriod}
       />
@@ -276,19 +275,19 @@ export default function Dashboard() {
           title="Technical Risks"
           color="hsl(var(--primary))"
           categories={getTrendCategories(technicalTags)}
-          isLoading={isTrendLoading}
+          isLoading={false}
         />
         <CategoryTrendCard
           title="Operational Risks"
           color="hsl(var(--warning))"
           categories={getTrendCategories(operationalTags)}
-          isLoading={isTrendLoading}
+          isLoading={false}
         />
         <CategoryTrendCard
           title="Business Risks"
           color="hsl(280, 70%, 50%)"
           categories={getTrendCategories(businessTags)}
-          isLoading={isTrendLoading}
+          isLoading={false}
         />
       </div>
 
