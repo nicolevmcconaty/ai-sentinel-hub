@@ -2,10 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   fetchDashboardSummary,
   fetchJobsSummary,
-  fetchRiskCategoryDistribution,
-  fetchIndustryDistribution,
-  fetchConfidenceMetrics,
-  fetchTimePeriodComparison,
   DashboardSummary,
   JobsSummary,
   RiskCategoryDistribution,
@@ -14,7 +10,7 @@ import {
   TimePeriodComparison,
 } from "@/lib/api";
 
-// Mock data for preview when API is unavailable
+// Mock data for dashboard summary (fallback)
 const mockDashboardSummary: DashboardSummary = {
   totals: { articles: 10247, risks: 3892 },
   top_taxonomy_labels: [
@@ -33,6 +29,7 @@ const mockDashboardSummary: DashboardSummary = {
   ],
 };
 
+// Mock data for jobs summary (fallback)
 const mockJobsSummary: JobsSummary = {
   totals: { total: 12458, pending: 18, running: 3, done: 11892, error: 342, skipped: 203 },
   success_rate: 94,
@@ -43,7 +40,8 @@ const mockJobsSummary: JobsSummary = {
   severity_distribution: { "1": 1247, "2": 892, "3": 1756, "4": 632, "5": 189 },
 };
 
-const mockRiskCategories: RiskCategoryDistribution = {
+// Static sample data for NEW features (no backend endpoint)
+const sampleRiskCategories: RiskCategoryDistribution = {
   primary: { technical: 2147, operational: 1089, business: 656 },
   secondary: {
     security_risk: 892,
@@ -69,7 +67,7 @@ const mockRiskCategories: RiskCategoryDistribution = {
   },
 };
 
-const mockIndustries: IndustryDistribution = {
+const sampleIndustries: IndustryDistribution = {
   public: {
     "Federal Government (US)": 289,
     "State Government (US)": 178,
@@ -93,14 +91,14 @@ const mockIndustries: IndustryDistribution = {
   },
 };
 
-const mockConfidence: ConfidenceMetrics = {
+const sampleConfidence: ConfidenceMetrics = {
   average: 87.4,
   high: 2847,
   medium: 892,
   low: 153,
 };
 
-const mockTrendData: TimePeriodComparison = {
+const sampleTrendData: TimePeriodComparison = {
   period: "week",
   severity: {
     low: { current: 2139, previous: 1892, change: 247, changePercent: 13.1, trend: "up" },
@@ -129,6 +127,7 @@ const mockTrendData: TimePeriodComparison = {
   overall: { current: 3892, previous: 3802, change: 90, changePercent: 2.4, trend: "up" },
 };
 
+// Real API hooks for EXISTING endpoints
 export function useDashboardSummary() {
   return useQuery<DashboardSummary>({
     queryKey: ["dashboardSummary"],
@@ -136,8 +135,6 @@ export function useDashboardSummary() {
     staleTime: 30000,
     refetchInterval: 60000,
     retry: 1,
-    // Use initialData so we still render even if the API is down.
-    // (placeholderData only shows during loading and can disappear on error)
     initialData: mockDashboardSummary,
   });
 }
@@ -153,48 +150,41 @@ export function useJobsSummary() {
   });
 }
 
+// Static data hooks for NEW features (sample data only - no API call)
 export function useRiskCategoryDistribution() {
-  return useQuery<RiskCategoryDistribution>({
-    queryKey: ["riskCategoryDistribution"],
-    queryFn: fetchRiskCategoryDistribution,
-    staleTime: 30000,
-    refetchInterval: 60000,
-    retry: 1,
-    initialData: mockRiskCategories,
-  });
+  return {
+    data: sampleRiskCategories,
+    isLoading: false,
+    isError: false,
+    refetch: () => {},
+  };
 }
 
 export function useIndustryDistribution() {
-  return useQuery<IndustryDistribution>({
-    queryKey: ["industryDistribution"],
-    queryFn: fetchIndustryDistribution,
-    staleTime: 30000,
-    refetchInterval: 60000,
-    retry: 1,
-    initialData: mockIndustries,
-  });
+  return {
+    data: sampleIndustries,
+    isLoading: false,
+    isError: false,
+    refetch: () => {},
+  };
 }
 
 export function useConfidenceMetrics() {
-  return useQuery<ConfidenceMetrics>({
-    queryKey: ["confidenceMetrics"],
-    queryFn: fetchConfidenceMetrics,
-    staleTime: 30000,
-    refetchInterval: 60000,
-    retry: 1,
-    initialData: mockConfidence,
-  });
+  return {
+    data: sampleConfidence,
+    isLoading: false,
+    isError: false,
+    refetch: () => {},
+  };
 }
 
 export function useTimePeriodComparison(period: "week" | "month" = "week") {
-  return useQuery<TimePeriodComparison>({
-    queryKey: ["timePeriodComparison", period],
-    queryFn: () => fetchTimePeriodComparison(period),
-    staleTime: 60000,
-    refetchInterval: 120000,
-    retry: 1,
-    initialData: { ...mockTrendData, period },
-  });
+  return {
+    data: { ...sampleTrendData, period } as TimePeriodComparison,
+    isLoading: false,
+    isError: false,
+    refetch: () => {},
+  };
 }
 
 // Combined hook for all dashboard data
@@ -205,9 +195,13 @@ export function useDashboardData() {
   const industries = useIndustryDistribution();
   const confidence = useConfidenceMetrics();
 
-  // We always have initialData, so never block the UI behind a loading or error screen.
   const isLoading = false;
   const isError = false;
+
+  // Check if real API data is being used (not just initial/mock data)
+  const isUsingMockData =
+    dashboardSummary.isError ||
+    jobsSummary.isError;
 
   return {
     dashboardSummary: dashboardSummary.data,
@@ -217,19 +211,10 @@ export function useDashboardData() {
     confidence: confidence.data,
     isLoading,
     isError,
-    // If any query errors, we assume we're showing the initial (sample) dataset.
-    isUsingMockData:
-      dashboardSummary.isError ||
-      jobsSummary.isError ||
-      riskCategories.isError ||
-      industries.isError ||
-      confidence.isError,
+    isUsingMockData,
     refetch: () => {
       dashboardSummary.refetch();
       jobsSummary.refetch();
-      riskCategories.refetch();
-      industries.refetch();
-      confidence.refetch();
     },
   };
 }
