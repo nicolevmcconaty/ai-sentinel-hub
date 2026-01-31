@@ -136,7 +136,9 @@ export function useDashboardSummary() {
     staleTime: 30000,
     refetchInterval: 60000,
     retry: 1,
-    placeholderData: mockDashboardSummary,
+    // Use initialData so we still render even if the API is down.
+    // (placeholderData only shows during loading and can disappear on error)
+    initialData: mockDashboardSummary,
   });
 }
 
@@ -147,7 +149,7 @@ export function useJobsSummary() {
     staleTime: 30000,
     refetchInterval: 60000,
     retry: 1,
-    placeholderData: mockJobsSummary,
+    initialData: mockJobsSummary,
   });
 }
 
@@ -158,7 +160,7 @@ export function useRiskCategoryDistribution() {
     staleTime: 30000,
     refetchInterval: 60000,
     retry: 1,
-    placeholderData: mockRiskCategories,
+    initialData: mockRiskCategories,
   });
 }
 
@@ -169,7 +171,7 @@ export function useIndustryDistribution() {
     staleTime: 30000,
     refetchInterval: 60000,
     retry: 1,
-    placeholderData: mockIndustries,
+    initialData: mockIndustries,
   });
 }
 
@@ -180,7 +182,7 @@ export function useConfidenceMetrics() {
     staleTime: 30000,
     refetchInterval: 60000,
     retry: 1,
-    placeholderData: mockConfidence,
+    initialData: mockConfidence,
   });
 }
 
@@ -191,7 +193,7 @@ export function useTimePeriodComparison(period: "week" | "month" = "week") {
     staleTime: 60000,
     refetchInterval: 120000,
     retry: 1,
-    placeholderData: { ...mockTrendData, period },
+    initialData: { ...mockTrendData, period },
   });
 }
 
@@ -203,15 +205,9 @@ export function useDashboardData() {
   const industries = useIndustryDistribution();
   const confidence = useConfidenceMetrics();
 
-  // Use placeholderData to show mock data while loading or on error
-  const isLoading = false; // Never show loading state - use placeholder data
-  
-  const isError = 
-    dashboardSummary.isError && 
-    jobsSummary.isError && 
-    riskCategories.isError && 
-    industries.isError &&
-    confidence.isError;
+  // We always have initialData, so never block the UI behind a loading or error screen.
+  const isLoading = false;
+  const isError = false;
 
   return {
     dashboardSummary: dashboardSummary.data,
@@ -221,7 +217,13 @@ export function useDashboardData() {
     confidence: confidence.data,
     isLoading,
     isError,
-    isUsingMockData: dashboardSummary.isError || !dashboardSummary.isFetched,
+    // If any query errors, we assume we're showing the initial (sample) dataset.
+    isUsingMockData:
+      dashboardSummary.isError ||
+      jobsSummary.isError ||
+      riskCategories.isError ||
+      industries.isError ||
+      confidence.isError,
     refetch: () => {
       dashboardSummary.refetch();
       jobsSummary.refetch();
