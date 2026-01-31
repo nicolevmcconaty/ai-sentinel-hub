@@ -6,7 +6,9 @@ import { TaxonomyBadge } from "@/components/dashboard/TaxonomyBadge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { mockRisks, mockDashboardSummary } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRisks, useDashboardSummary } from "@/hooks/use-risks-data";
+import { TaxonomyLabel } from "@/lib/api";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -15,17 +17,36 @@ export default function Risks() {
   const [taxonomyFilter, setTaxonomyFilter] = useState<string>("all");
   const [sectorFilter, setSectorFilter] = useState<string>("all");
 
-  const filteredRisks = mockRisks.filter((risk) => {
+  const { data: risks, isLoading: isLoadingRisks } = useRisks();
+  const { data: dashboardSummary, isLoading: isLoadingSummary } = useDashboardSummary();
+
+  const filteredRisks = (risks || []).filter((risk) => {
     if (severityFilter !== "all" && risk.severity.toString() !== severityFilter) return false;
     if (taxonomyFilter !== "all" && risk.taxonomy_label !== taxonomyFilter) return false;
     if (sectorFilter !== "all" && risk.sector !== sectorFilter) return false;
     return true;
   });
 
-  const criticalCount = mockRisks.filter(r => r.severity === 5).length;
-  const highCount = mockRisks.filter(r => r.severity === 4).length;
-  const sectors = [...new Set(mockRisks.map(r => r.sector))];
-  const taxonomies = [...new Set(mockRisks.map(r => r.taxonomy_label))];
+  const criticalCount = (risks || []).filter(r => r.severity === 5).length;
+  const highCount = (risks || []).filter(r => r.severity === 4).length;
+  const sectors = [...new Set((risks || []).map(r => r.sector))];
+  const taxonomies = [...new Set((risks || []).map(r => r.taxonomy_label))];
+
+  if (isLoadingRisks || isLoadingSummary) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div>
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-4 w-64 mt-2" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -45,7 +66,7 @@ export default function Risks() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Risks"
-          value={mockDashboardSummary.totals.risks}
+          value={dashboardSummary?.totals.risks || 0}
           icon={<Shield className="w-6 h-6" />}
           variant="primary"
         />
@@ -90,7 +111,7 @@ export default function Risks() {
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wider">L{likelihood}</span>
               </div>
               {[1, 2, 3, 4, 5].map((severity) => {
-                const count = mockRisks.filter(
+                const count = (risks || []).filter(
                   r => r.severity === severity && r.likelihood === likelihood
                 ).length;
                 const riskScore = severity * likelihood;

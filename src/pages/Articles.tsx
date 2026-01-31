@@ -2,19 +2,43 @@ import { FileText, ExternalLink, Shield, Copy, Check } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { mockArticles, mockDashboardSummary } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useArticles, useDashboardSummary } from "@/hooks/use-articles-data";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export default function Articles() {
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  
+  const { data: articles, isLoading: isLoadingArticles } = useArticles();
+  const { data: dashboardSummary, isLoading: isLoadingSummary } = useDashboardSummary();
 
   const copyUrl = (id: number, url: string) => {
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
+
+  if (isLoadingArticles || isLoadingSummary) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div>
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-4 w-64 mt-2" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const totalArticles = dashboardSummary?.totals.articles || 0;
+  const totalRisks = dashboardSummary?.totals.risks || 0;
+  const avgRisksPerArticle = totalArticles > 0 ? (totalRisks / totalArticles).toFixed(1) : "0";
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -28,19 +52,19 @@ export default function Articles() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           title="Total Articles"
-          value={mockDashboardSummary.totals.articles}
+          value={totalArticles}
           icon={<FileText className="w-6 h-6" />}
           variant="primary"
         />
         <StatCard
           title="Risks Extracted"
-          value={mockDashboardSummary.totals.risks}
+          value={totalRisks}
           icon={<Shield className="w-6 h-6" />}
           variant="warning"
         />
         <StatCard
           title="Avg Risks/Article"
-          value={(mockDashboardSummary.totals.risks / mockDashboardSummary.totals.articles).toFixed(1)}
+          value={avgRisksPerArticle}
           icon={<FileText className="w-6 h-6" />}
         />
       </div>
@@ -60,7 +84,7 @@ export default function Articles() {
               </tr>
             </thead>
             <tbody>
-              {mockArticles.map((article) => (
+              {(articles || []).map((article) => (
                 <tr key={article.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                   <td className="py-3 px-4">
                     <span className="font-mono text-sm text-primary">#{article.id}</span>
@@ -126,7 +150,7 @@ export default function Articles() {
           </table>
         </div>
 
-        {mockArticles.length === 0 && (
+        {(!articles || articles.length === 0) && (
           <div className="text-center py-12">
             <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">No articles found</p>
