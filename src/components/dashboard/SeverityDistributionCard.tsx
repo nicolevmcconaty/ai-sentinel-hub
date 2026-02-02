@@ -52,17 +52,17 @@ export function SeverityDistributionCard({
         )}
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 flex-1 min-h-0">
         {/* Pie Chart */}
-        <div className="h-48 w-48 shrink-0">
+        <div className="h-36 w-36 shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={45}
-                outerRadius={70}
+                innerRadius={35}
+                outerRadius={55}
                 paddingAngle={2}
                 dataKey="value"
               >

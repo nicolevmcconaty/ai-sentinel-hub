@@ -202,55 +202,57 @@ export default function Dashboard() {
       </div>
 
       {/* SECTION 2: Risk Distribution Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SeverityDistributionCard 
-          data={severityComparison || []}
-          overallConfidence={confidence?.average}
-          showComparison={true}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        <div className="min-h-0">
+          <SeverityDistributionCard 
+            data={severityComparison || []}
+            overallConfidence={confidence?.average}
+            showComparison={true}
+          />
+        </div>
         
         {/* Confidence Score Card */}
-        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border h-full flex flex-col">
+        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border flex flex-col min-h-0">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-4 h-4 text-primary" />
             <h3 className="font-semibold text-foreground text-sm uppercase tracking-wider">Analysis Confidence</h3>
           </div>
           
-          <div className="flex flex-col items-center justify-center py-4 flex-1">
-            <div className="relative w-32 h-32">
+          <div className="flex flex-col items-center justify-center py-4 flex-1 min-h-0">
+            <div className="relative w-28 h-28">
               <svg className="w-full h-full transform -rotate-90">
                 <circle
-                  cx="64"
-                  cy="64"
-                  r="56"
+                  cx="56"
+                  cy="56"
+                  r="48"
                   stroke="hsl(var(--muted))"
                   strokeWidth="8"
                   fill="none"
                 />
                 <circle
-                  cx="64"
-                  cy="64"
-                  r="56"
+                  cx="56"
+                  cy="56"
+                  r="48"
                   stroke="hsl(var(--primary))"
                   strokeWidth="8"
                   fill="none"
                   strokeLinecap="round"
-                  strokeDasharray={`${((confidence?.average || 0) / 100) * 352} 352`}
+                  strokeDasharray={`${((confidence?.average || 0) / 100) * 302} 302`}
                   className="transition-all duration-1000"
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl font-bold text-foreground">{confidence?.average?.toFixed(1) || 0}%</span>
+                <span className="text-2xl font-bold text-foreground">{confidence?.average?.toFixed(1) || 0}%</span>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground mt-4 text-center">
-              Average confidence in risk classification and mapping accuracy
+            <p className="text-xs text-muted-foreground mt-3 text-center">
+              Average confidence in risk classification
             </p>
           </div>
 
           <div className="mt-auto pt-4 border-t border-border space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">High Confidence (&gt;90%)</span>
+              <span className="text-muted-foreground">High (&gt;90%)</span>
               <span className="font-mono text-success">{confidence?.high?.toLocaleString() || 0}</span>
             </div>
             <div className="flex items-center justify-between text-xs">
