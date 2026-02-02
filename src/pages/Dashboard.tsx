@@ -4,13 +4,17 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { WeeklyHeatmap } from "@/components/dashboard/WeeklyHeatmap";
-import { RiskCategoriesCard } from "@/components/dashboard/RiskCategoriesCard";
 import { EnhancedStatCard } from "@/components/dashboard/EnhancedStatCard";
 import { SeverityDistributionCard } from "@/components/dashboard/SeverityDistributionCard";
+import { RiskDomainTaxonomyCard } from "@/components/dashboard/RiskDomainTaxonomyCard";
+import { ExpandableRiskCategoriesCard } from "@/components/dashboard/ExpandableRiskCategoriesCard";
 import { useDashboardData, useTimePeriodComparison } from "@/hooks/use-dashboard-data";
-import { secondaryTagLabels, SecondaryRiskTag, RiskCategoryTrend } from "@/lib/api";
+import { secondaryTagLabels, SecondaryRiskTag, RiskCategoryTrend, RiskDomain } from "@/lib/api";
 
 export default function Dashboard() {
+  // Filter state for domain/category clicks
+  const [selectedDomain, setSelectedDomain] = useState<RiskDomain | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<SecondaryRiskTag | null>(null);
   const [trendPeriod, setTrendPeriod] = useState<"week" | "month">("week");
   
   const { 
@@ -196,6 +200,20 @@ export default function Dashboard() {
       {/* Weekly Risk Activity Heatmap */}
       <WeeklyHeatmap isLoading={false} />
 
+      {/* Risk Taxonomy Domains - 7 Domains */}
+      <RiskDomainTaxonomyCard
+        domains={riskCategories?.domains || {
+          safety_harm: 0,
+          security_threats: 0,
+          privacy_data: 0,
+          fairness_bias: 0,
+          transparency_accountability: 0,
+          reliability_robustness: 0,
+          societal_environmental: 0,
+        }}
+        onDomainClick={(domain) => setSelectedDomain(domain === selectedDomain ? null : domain)}
+      />
+
       {/* Risk Distribution & Categories Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Risk Severity Distribution - Enhanced with comparison */}
@@ -205,11 +223,12 @@ export default function Dashboard() {
           showComparison={true}
         />
 
-        {/* Risk Categories (Primary + Secondary combined) */}
-        <RiskCategoriesCard
+        {/* Risk Categories (Primary + Secondary - Expandable) */}
+        <ExpandableRiskCategoriesCard
           primaryCategories={primaryCategoryData}
           trendCategories={allTrendCategories}
           isLoading={false}
+          onCategoryClick={(category) => setSelectedCategory(category === selectedCategory ? null : category)}
         />
       </div>
 
