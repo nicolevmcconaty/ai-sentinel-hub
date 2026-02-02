@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { WeeklyHeatmap } from "@/components/dashboard/WeeklyHeatmap";
 import { EnhancedStatCard } from "@/components/dashboard/EnhancedStatCard";
 import { SeverityDistributionCard } from "@/components/dashboard/SeverityDistributionCard";
-import { RiskDomainTaxonomyCard } from "@/components/dashboard/RiskDomainTaxonomyCard";
+import { RiskDomainTableCard } from "@/components/dashboard/RiskDomainTableCard";
 import { ExpandableRiskCategoriesCard } from "@/components/dashboard/ExpandableRiskCategoriesCard";
 import { SectorIndustryCard } from "@/components/dashboard/SectorIndustryCard";
 import { IndustryDeepDive } from "@/components/dashboard/IndustryDeepDive";
@@ -266,7 +266,7 @@ export default function Dashboard() {
       </div>
 
       {/* SECTION 3: Risk Database Taxonomy - 7 Domains */}
-      <RiskDomainTaxonomyCard
+      <RiskDomainTableCard
         domains={riskCategories?.domains || {
           safety_harm: 0,
           security_threats: 0,
