@@ -34,7 +34,7 @@ export function SeverityDistributionCard({
   };
 
   return (
-    <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
+    <Card className="p-6 bg-card/50 backdrop-blur-sm border-border h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-warning" />
