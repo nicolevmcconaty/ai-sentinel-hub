@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Shield, CheckCircle, Clock, Zap, Activity, Building2, Briefcase, Heart, TrendingUp, Target, RefreshCw } from "lucide-react";
+import { FileText, Shield, CheckCircle, Clock, Zap, Activity, TrendingUp, Target, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,8 @@ import { EnhancedStatCard } from "@/components/dashboard/EnhancedStatCard";
 import { SeverityDistributionCard } from "@/components/dashboard/SeverityDistributionCard";
 import { RiskDomainTaxonomyCard } from "@/components/dashboard/RiskDomainTaxonomyCard";
 import { ExpandableRiskCategoriesCard } from "@/components/dashboard/ExpandableRiskCategoriesCard";
+import { SectorIndustryCard } from "@/components/dashboard/SectorIndustryCard";
+import { IndustryDeepDive } from "@/components/dashboard/IndustryDeepDive";
 import { useDashboardData, useTimePeriodComparison } from "@/hooks/use-dashboard-data";
 import { secondaryTagLabels, SecondaryRiskTag, RiskCategoryTrend, RiskDomain } from "@/lib/api";
 
@@ -16,6 +18,9 @@ export default function Dashboard() {
   const [selectedDomain, setSelectedDomain] = useState<RiskDomain | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<SecondaryRiskTag | null>(null);
   const [trendPeriod, setTrendPeriod] = useState<"week" | "month">("week");
+  
+  // Industry deep dive state
+  const [deepDiveIndustry, setDeepDiveIndustry] = useState<{ name: string; sector: "public" | "private" | "nonprofit" } | null>(null);
   
   const { 
     dashboardSummary, 
@@ -59,11 +64,10 @@ export default function Dashboard() {
       trend: "stable" as const,
     }));
 
-  // Top industries
-  const topIndustries = industries ? [
-    ...Object.entries(industries.private).slice(0, 3).map(([name, count]) => ({ name, count: count as number, sector: "Private" })),
-    ...Object.entries(industries.public).slice(0, 2).map(([name, count]) => ({ name, count: count as number, sector: "Public" })),
-  ].sort((a, b) => b.count - a.count).slice(0, 5) : [];
+  // Handle industry click for deep dive
+  const handleIndustryClick = (name: string, sector: "public" | "private" | "nonprofit") => {
+    setDeepDiveIndustry({ name, sector });
+  };
 
   if (isLoading) {
     return (
@@ -232,74 +236,17 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Industry & Confidence Row */}
+      {/* Sector & Industry Analysis */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Most Affected Industries */}
-        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border lg:col-span-2">
-          <div className="flex items-center gap-2 mb-4">
-            <Building2 className="w-4 h-4 text-primary" />
-            <h3 className="font-semibold text-foreground text-sm uppercase tracking-wider">Most Affected Industries</h3>
-          </div>
-          <div className="space-y-3">
-            {topIndustries.map((industry, index) => (
-              <div key={industry.name} className="flex items-center gap-4">
-                <span className="text-xs text-muted-foreground w-4">{index + 1}.</span>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-foreground">{industry.name}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                        industry.sector === "Private" 
-                          ? "bg-primary/20 text-primary" 
-                          : "bg-warning/20 text-warning"
-                      }`}>
-                        {industry.sector}
-                      </span>
-                    </div>
-                    <span className="text-sm font-mono font-semibold text-foreground">{industry.count} articles</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
-                      style={{ width: `${topIndustries[0]?.count ? (industry.count / topIndustries[0].count) * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Industry Sector Summary */}
-          <div className="mt-6 pt-4 border-t border-border grid grid-cols-3 gap-4">
-            <div className="flex items-center gap-3">
-              <Briefcase className="w-4 h-4 text-primary" />
-              <div>
-                <p className="text-xs text-muted-foreground">Private Sector</p>
-                <p className="text-sm font-semibold text-foreground">
-                  {industries ? Object.values(industries.private).reduce((a, b) => (a as number) + (b as number), 0) as number : 0}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Building2 className="w-4 h-4 text-warning" />
-              <div>
-                <p className="text-xs text-muted-foreground">Public Sector</p>
-                <p className="text-sm font-semibold text-foreground">
-                  {industries ? Object.values(industries.public).reduce((a, b) => (a as number) + (b as number), 0) as number : 0}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Heart className="w-4 h-4 text-success" />
-              <div>
-                <p className="text-xs text-muted-foreground">Non-Profit</p>
-                <p className="text-sm font-semibold text-foreground">
-                  {industries ? Object.values(industries.nonprofit).reduce((a, b) => (a as number) + (b as number), 0) as number : 0}
-                </p>
-              </div>
-            </div>
-          </div>
-        </Card>
+        {/* Sector Industry Card - spans 2 columns */}
+        <div className="lg:col-span-2">
+          {industries && (
+            <SectorIndustryCard
+              industries={industries}
+              onIndustryClick={handleIndustryClick}
+            />
+          )}
+        </div>
 
         {/* Confidence Score */}
         <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
@@ -356,6 +303,16 @@ export default function Dashboard() {
           </div>
         </Card>
       </div>
+
+      {/* Industry Deep Dive Panel */}
+      {deepDiveIndustry && (
+        <IndustryDeepDive
+          isOpen={!!deepDiveIndustry}
+          onClose={() => setDeepDiveIndustry(null)}
+          industry={deepDiveIndustry.name}
+          sector={deepDiveIndustry.sector}
+        />
+      )}
     </div>
   );
 }
