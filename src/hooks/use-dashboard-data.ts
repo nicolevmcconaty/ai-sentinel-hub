@@ -40,6 +40,95 @@ const mockJobsSummary: JobsSummary = {
   severity_distribution: { "1": 1247, "2": 892, "3": 1756, "4": 632, "5": 189 },
 };
 
+// Platform metrics with trends (sample data for sparklines)
+export interface PlatformMetric {
+  current: number;
+  previous: number;
+  change: number;
+  changePercent: number;
+  trend: "up" | "down" | "stable";
+  sparkline: number[];
+  subtitle?: string;
+}
+
+export interface PlatformMetrics {
+  totalArticles: PlatformMetric;
+  risksMapped: PlatformMetric;
+  successRate: PlatformMetric;
+  activity24h: PlatformMetric;
+  avgProcessingTime: PlatformMetric;
+  pendingQueue: PlatformMetric;
+}
+
+const samplePlatformMetrics: PlatformMetrics = {
+  totalArticles: {
+    current: 10247,
+    previous: 9834,
+    change: 413,
+    changePercent: 4.2,
+    trend: "up",
+    sparkline: [8200, 8650, 9100, 9350, 9600, 9834, 10247],
+  },
+  risksMapped: {
+    current: 3892,
+    previous: 3654,
+    change: 238,
+    changePercent: 6.5,
+    trend: "up",
+    sparkline: [3100, 3250, 3400, 3500, 3654, 3780, 3892],
+  },
+  successRate: {
+    current: 94,
+    previous: 92,
+    change: 2,
+    changePercent: 2.2,
+    trend: "up",
+    sparkline: [89, 90, 91, 91, 92, 93, 94],
+  },
+  activity24h: {
+    current: 342,
+    previous: 298,
+    change: 44,
+    changePercent: 14.8,
+    trend: "up",
+    sparkline: [245, 267, 289, 312, 298, 320, 342],
+    subtitle: "~14.3/hour avg",
+  },
+  avgProcessingTime: {
+    current: 2.3,
+    previous: 2.5,
+    change: -0.2,
+    changePercent: -8.0,
+    trend: "down",
+    sparkline: [3.1, 2.9, 2.7, 2.6, 2.5, 2.4, 2.3],
+    subtitle: "8% faster",
+  },
+  pendingQueue: {
+    current: 18,
+    previous: 24,
+    change: -6,
+    changePercent: -25.0,
+    trend: "down",
+    sparkline: [35, 42, 28, 31, 24, 21, 18],
+    subtitle: "Est. 4min to clear",
+  },
+};
+
+// Severity comparison data
+export interface SeverityComparisonData {
+  name: string;
+  value: number;
+  previousValue: number;
+  color: string;
+}
+
+const sampleSeverityComparison: SeverityComparisonData[] = [
+  { name: "Low", value: 2139, previousValue: 1892, color: "hsl(160, 84%, 39%)" },
+  { name: "Medium", value: 1756, previousValue: 1834, color: "hsl(38, 92%, 50%)" },
+  { name: "High", value: 632, previousValue: 589, color: "hsl(25, 95%, 53%)" },
+  { name: "Critical", value: 189, previousValue: 212, color: "hsl(0, 72%, 51%)" },
+];
+
 // Static sample data for NEW features (no backend endpoint)
 const sampleRiskCategories: RiskCategoryDistribution = {
   primary: { technical: 2147, operational: 1089, business: 656 },
@@ -187,6 +276,22 @@ export function useTimePeriodComparison(period: "week" | "month" = "week") {
   };
 }
 
+export function usePlatformMetrics() {
+  return {
+    data: samplePlatformMetrics,
+    isLoading: false,
+    isError: false,
+  };
+}
+
+export function useSeverityComparison() {
+  return {
+    data: sampleSeverityComparison,
+    isLoading: false,
+    isError: false,
+  };
+}
+
 // Combined hook for all dashboard data
 export function useDashboardData() {
   const dashboardSummary = useDashboardSummary();
@@ -194,6 +299,8 @@ export function useDashboardData() {
   const riskCategories = useRiskCategoryDistribution();
   const industries = useIndustryDistribution();
   const confidence = useConfidenceMetrics();
+  const platformMetrics = usePlatformMetrics();
+  const severityComparison = useSeverityComparison();
 
   const isLoading = false;
   const isError = false;
@@ -209,6 +316,8 @@ export function useDashboardData() {
     riskCategories: riskCategories.data,
     industries: industries.data,
     confidence: confidence.data,
+    platformMetrics: platformMetrics.data,
+    severityComparison: severityComparison.data,
     isLoading,
     isError,
     isUsingMockData,
