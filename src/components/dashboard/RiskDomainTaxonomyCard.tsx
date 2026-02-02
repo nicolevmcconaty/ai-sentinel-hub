@@ -114,11 +114,11 @@ export function RiskDomainTaxonomyCard({
 
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Network className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-foreground text-sm uppercase tracking-wider">
-            Risk Database Taxonomy (7 Domains)
+            Map to Risk Database Taxonomy (7 Domains)
           </h3>
         </div>
         <span className="text-xs text-muted-foreground">
@@ -126,7 +126,7 @@ export function RiskDomainTaxonomyCard({
         </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {domainData.map((item, index) => {
           const trend = getTrend(item.count, item.previousCount);
           const TrendIcon = trend.icon;
@@ -135,18 +135,18 @@ export function RiskDomainTaxonomyCard({
             <div 
               key={item.domain}
               className={cn(
-                "group p-3 rounded-lg border border-border/50 hover:border-border transition-all",
+                "group p-2.5 rounded-lg border border-border/50 hover:border-border transition-all",
                 onDomainClick && "cursor-pointer hover:bg-muted/30"
               )}
               onClick={() => onDomainClick?.(item.domain)}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {/* Rank */}
                 <span className="text-xs text-muted-foreground w-4 shrink-0">{index + 1}</span>
                 
                 {/* Color indicator */}
                 <div 
-                  className="w-2 h-10 rounded-full shrink-0" 
+                  className="w-2 h-8 rounded-full shrink-0" 
                   style={{ backgroundColor: domainColors[item.domain] }}
                 />
                 

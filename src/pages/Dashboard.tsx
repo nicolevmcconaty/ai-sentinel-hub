@@ -102,7 +102,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       {/* Mock Data Banner */}
       {isUsingMockData && (
         <div className="bg-warning/10 border border-warning/30 rounded-lg px-4 py-3 flex items-center justify-between">
@@ -129,7 +129,7 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {/* Platform Metrics Section - Enhanced with sparklines */}
+      {/* SECTION 1: Platform Metrics */}
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Target className="w-5 h-5 text-primary" />
@@ -201,54 +201,15 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Weekly Risk Activity Heatmap */}
-      <WeeklyHeatmap isLoading={false} />
-
-      {/* Risk Taxonomy Domains - 7 Domains */}
-      <RiskDomainTaxonomyCard
-        domains={riskCategories?.domains || {
-          safety_harm: 0,
-          security_threats: 0,
-          privacy_data: 0,
-          fairness_bias: 0,
-          transparency_accountability: 0,
-          reliability_robustness: 0,
-          societal_environmental: 0,
-        }}
-        onDomainClick={(domain) => setSelectedDomain(domain === selectedDomain ? null : domain)}
-      />
-
-      {/* Risk Distribution & Categories Row */}
+      {/* SECTION 2: Risk Distribution Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Risk Severity Distribution - Enhanced with comparison */}
         <SeverityDistributionCard 
           data={severityComparison || []}
           overallConfidence={confidence?.average}
           showComparison={true}
         />
-
-        {/* Risk Categories (Primary + Secondary - Expandable) */}
-        <ExpandableRiskCategoriesCard
-          primaryCategories={primaryCategoryData}
-          trendCategories={allTrendCategories}
-          isLoading={false}
-          onCategoryClick={(category) => setSelectedCategory(category === selectedCategory ? null : category)}
-        />
-      </div>
-
-      {/* Sector & Industry Analysis */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sector Industry Card - spans 2 columns */}
-        <div className="lg:col-span-2">
-          {industries && (
-            <SectorIndustryCard
-              industries={industries}
-              onIndustryClick={handleIndustryClick}
-            />
-          )}
-        </div>
-
-        {/* Confidence Score */}
+        
+        {/* Confidence Score Card */}
         <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-4 h-4 text-primary" />
@@ -303,6 +264,43 @@ export default function Dashboard() {
           </div>
         </Card>
       </div>
+
+      {/* SECTION 3: Risk Database Taxonomy - 7 Domains */}
+      <RiskDomainTaxonomyCard
+        domains={riskCategories?.domains || {
+          safety_harm: 0,
+          security_threats: 0,
+          privacy_data: 0,
+          fairness_bias: 0,
+          transparency_accountability: 0,
+          reliability_robustness: 0,
+          societal_environmental: 0,
+        }}
+        onDomainClick={(domain) => setSelectedDomain(domain === selectedDomain ? null : domain)}
+      />
+
+      {/* SECTION 4: Top Risk Categories (Primary + Secondary) */}
+      <ExpandableRiskCategoriesCard
+        primaryCategories={primaryCategoryData}
+        trendCategories={allTrendCategories}
+        isLoading={false}
+        onCategoryClick={(category) => setSelectedCategory(category === selectedCategory ? null : category)}
+      />
+
+      {/* SECTION 5: Industry Tagging */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-3">
+          {industries && (
+            <SectorIndustryCard
+              industries={industries}
+              onIndustryClick={handleIndustryClick}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* SECTION 6: Time Based Analysis (at the bottom) */}
+      <WeeklyHeatmap isLoading={false} />
 
       {/* Industry Deep Dive Panel */}
       {deepDiveIndustry && (

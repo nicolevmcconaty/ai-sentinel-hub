@@ -71,7 +71,7 @@ export function ExpandableRiskCategoriesCard({
 
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-foreground text-sm uppercase tracking-wider">
@@ -79,11 +79,11 @@ export function ExpandableRiskCategoriesCard({
           </h3>
         </div>
         <span className="text-xs text-muted-foreground">
-          Primary & Secondary Hierarchy
+          Sorted High → Low
         </span>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {sortedPrimary.map((category) => {
           const percentage = total > 0 ? ((category.value / total) * 100) : 0;
           const subcategories = getCategoryTrends(category.tags);
