@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { FileText, Shield, CheckCircle, Clock, Zap, Activity, Building2, Briefcase, Heart, TrendingUp, Target, RefreshCw } from "lucide-react";
-import { StatCard } from "@/components/dashboard/StatCard";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { WeeklyHeatmap } from "@/components/dashboard/WeeklyHeatmap";
 import { RiskCategoriesCard } from "@/components/dashboard/RiskCategoriesCard";
+import { EnhancedStatCard } from "@/components/dashboard/EnhancedStatCard";
+import { SeverityDistributionCard } from "@/components/dashboard/SeverityDistributionCard";
 import { useDashboardData, useTimePeriodComparison } from "@/hooks/use-dashboard-data";
 import { secondaryTagLabels, SecondaryRiskTag, RiskCategoryTrend } from "@/lib/api";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 export default function Dashboard() {
   const [trendPeriod, setTrendPeriod] = useState<"week" | "month">("week");
@@ -19,6 +19,8 @@ export default function Dashboard() {
     riskCategories, 
     industries, 
     confidence,
+    platformMetrics,
+    severityComparison,
     isLoading,
     isError,
     isUsingMockData,
@@ -28,16 +30,6 @@ export default function Dashboard() {
   const { 
     data: trendData, 
   } = useTimePeriodComparison(trendPeriod);
-
-  // Prepare severity data for pie chart
-  const severityData = jobsSummary ? [
-    { name: "Low", value: (jobsSummary.severity_distribution["1"] || 0) + (jobsSummary.severity_distribution["2"] || 0), color: "hsl(var(--success))" },
-    { name: "Medium", value: jobsSummary.severity_distribution["3"] || 0, color: "hsl(var(--warning))" },
-    { name: "High", value: jobsSummary.severity_distribution["4"] || 0, color: "hsl(25, 95%, 53%)" },
-    { name: "Critical", value: jobsSummary.severity_distribution["5"] || 0, color: "hsl(var(--critical))" },
-  ] : [];
-
-  const totalSeverity = severityData.reduce((acc, item) => acc + item.value, 0);
 
   // Prepare secondary tags for each category
   const technicalTags: SecondaryRiskTag[] = ["security_risk", "privacy_risk", "technical_performance_risk", "data_risk"];
@@ -129,44 +121,73 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {/* Platform Metrics Section */}
+      {/* Platform Metrics Section - Enhanced with sparklines */}
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Target className="w-5 h-5 text-primary" />
           <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">Platform Metrics</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <StatCard
-            title="Total Articles Ingested"
-            value={dashboardSummary?.totals.articles.toLocaleString() || "0"}
+          <EnhancedStatCard
+            title="Total Articles"
+            value={platformMetrics?.totalArticles.current.toLocaleString() || "0"}
+            previousValue={platformMetrics?.totalArticles.previous}
+            change={platformMetrics?.totalArticles.change}
+            changePercent={platformMetrics?.totalArticles.changePercent}
+            trend={platformMetrics?.totalArticles.trend}
+            sparklineData={platformMetrics?.totalArticles.sparkline}
             icon={<FileText className="w-5 h-5" />}
             variant="primary"
           />
-          <StatCard
+          <EnhancedStatCard
             title="Risks Mapped"
-            value={dashboardSummary?.totals.risks.toLocaleString() || "0"}
+            value={platformMetrics?.risksMapped.current.toLocaleString() || "0"}
+            previousValue={platformMetrics?.risksMapped.previous}
+            change={platformMetrics?.risksMapped.change}
+            changePercent={platformMetrics?.risksMapped.changePercent}
+            trend={platformMetrics?.risksMapped.trend}
+            sparklineData={platformMetrics?.risksMapped.sparkline}
             icon={<Shield className="w-5 h-5" />}
             variant="warning"
           />
-          <StatCard
+          <EnhancedStatCard
             title="Success Rate"
-            value={`${jobsSummary?.success_rate || 0}%`}
+            value={`${platformMetrics?.successRate.current || 0}%`}
+            change={platformMetrics?.successRate.change}
+            changePercent={platformMetrics?.successRate.changePercent}
+            trend={platformMetrics?.successRate.trend}
+            sparklineData={platformMetrics?.successRate.sparkline}
             icon={<CheckCircle className="w-5 h-5" />}
             variant="success"
           />
-          <StatCard
+          <EnhancedStatCard
             title="24h Activity"
-            value={jobsSummary?.recent_activity.last_24h || 0}
+            value={platformMetrics?.activity24h.current || 0}
+            change={platformMetrics?.activity24h.change}
+            changePercent={platformMetrics?.activity24h.changePercent}
+            trend={platformMetrics?.activity24h.trend}
+            sparklineData={platformMetrics?.activity24h.sparkline}
+            subtitle={platformMetrics?.activity24h.subtitle}
             icon={<Activity className="w-5 h-5" />}
           />
-          <StatCard
+          <EnhancedStatCard
             title="Avg Processing"
-            value={`${jobsSummary?.avg_processing_time_seconds || 0}s`}
+            value={`${platformMetrics?.avgProcessingTime.current || 0}s`}
+            change={platformMetrics?.avgProcessingTime.change}
+            changePercent={platformMetrics?.avgProcessingTime.changePercent}
+            trend={platformMetrics?.avgProcessingTime.trend}
+            sparklineData={platformMetrics?.avgProcessingTime.sparkline}
+            subtitle={platformMetrics?.avgProcessingTime.subtitle}
             icon={<Clock className="w-5 h-5" />}
           />
-          <StatCard
+          <EnhancedStatCard
             title="Pending Queue"
-            value={jobsSummary?.totals.pending || 0}
+            value={platformMetrics?.pendingQueue.current || 0}
+            change={platformMetrics?.pendingQueue.change}
+            changePercent={platformMetrics?.pendingQueue.changePercent}
+            trend={platformMetrics?.pendingQueue.trend}
+            sparklineData={platformMetrics?.pendingQueue.sparkline}
+            subtitle={platformMetrics?.pendingQueue.subtitle}
             icon={<Zap className="w-5 h-5" />}
           />
         </div>
@@ -177,57 +198,12 @@ export default function Dashboard() {
 
       {/* Risk Distribution & Categories Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Risk Severity Distribution */}
-        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
-          <h3 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Risk Severity Distribution</h3>
-          <div className="flex items-center gap-6">
-            <div className="h-48 w-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={severityData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={45}
-                    outerRadius={70}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {severityData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                      color: "hsl(var(--foreground))",
-                    }}
-                    formatter={(value: number) => [`${value} (${totalSeverity > 0 ? ((value / totalSeverity) * 100).toFixed(1) : 0}%)`, "Count"]}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex-1 space-y-3">
-              {severityData.map((item) => (
-                <div key={item.name} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-sm text-foreground">{item.name}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground">{totalSeverity > 0 ? ((item.value / totalSeverity) * 100).toFixed(0) : 0}%</span>
-                    <span className="text-sm font-mono font-semibold text-foreground w-12 text-right">{item.value}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground mt-4 border-t border-border pt-4">
-            Severity is determined by potential impact magnitude, exploitability, and affected scope
-          </p>
-        </Card>
+        {/* Risk Severity Distribution - Enhanced with comparison */}
+        <SeverityDistributionCard 
+          data={severityComparison || []}
+          overallConfidence={confidence?.average}
+          showComparison={true}
+        />
 
         {/* Risk Categories (Primary + Secondary combined) */}
         <RiskCategoriesCard
