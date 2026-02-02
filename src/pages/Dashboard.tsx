@@ -210,13 +210,13 @@ export default function Dashboard() {
         />
         
         {/* Confidence Score Card */}
-        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border">
+        <Card className="p-6 bg-card/50 backdrop-blur-sm border-border h-full flex flex-col">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-4 h-4 text-primary" />
             <h3 className="font-semibold text-foreground text-sm uppercase tracking-wider">Analysis Confidence</h3>
           </div>
           
-          <div className="flex flex-col items-center justify-center py-4">
+          <div className="flex flex-col items-center justify-center py-4 flex-1">
             <div className="relative w-32 h-32">
               <svg className="w-full h-full transform -rotate-90">
                 <circle
@@ -248,7 +248,7 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-border space-y-2">
+          <div className="mt-auto pt-4 border-t border-border space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">High Confidence (&gt;90%)</span>
               <span className="font-mono text-success">{confidence?.high?.toLocaleString() || 0}</span>
