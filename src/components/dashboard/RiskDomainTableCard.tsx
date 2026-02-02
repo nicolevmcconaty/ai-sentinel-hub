@@ -197,7 +197,7 @@ function DomainSection({ data, onDomainClick }: { data: DomainData; onDomainClic
                   <TableHeader>
                     <TableRow className="hover:bg-transparent border-b border-border/30">
                       <TableHead className="w-20 text-[10px] h-8 pl-12">Ev_ID</TableHead>
-                      <TableHead className="w-24 text-[10px] h-8">Document_ID</TableHead>
+                      <TableHead className="w-24 text-[10px] h-8">Risk_ID</TableHead>
                       <TableHead className="w-28 text-[10px] h-8">Category Level</TableHead>
                       <TableHead className="text-[10px] h-8">Risk Category</TableHead>
                       <TableHead className="text-[10px] h-8">Risk Subcategory</TableHead>
